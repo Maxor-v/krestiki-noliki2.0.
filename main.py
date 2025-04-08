@@ -3,11 +3,11 @@ from tkinter import messagebox
 
 window = tk.Tk()
 window.title("Крестики-нолики")
-window.geometry("300x400")
+window.geometry("262x382")
 
-current_player = "X"
-click_cnt = 0
+
 buttons = []
+click_cnt = 0
 player_wins = {"X": 0, "O": 0}  # Счетчик побед для "X" и "O"
 player_choice = tk.StringVar(value="X")  # Выбор символа (X или O)
 
@@ -25,12 +25,15 @@ def check_winner():
 
     return False
 
+
 def reset_board():
-    global click_cnt
+    global click_cnt, current_player
+    current_player = player_choice.get()
+    click_cnt = 0
     for row in range(3):
         for col in range(3):
             buttons[row][col]['text'] = ""
-    click_cnt = 0
+
 
 def on_click(row, col):
     global current_player, click_cnt
@@ -53,22 +56,38 @@ def on_click(row, col):
         if click_cnt == 9:
             messagebox.showinfo("Игра окончена", "Ничья")
             reset_board()
+        else:
+          current_player = "O" if current_player == "X" else "X"
 
-    current_player = "O" if current_player == "X" else "X"
 
 def start_game():
-    global current_player, click_cnt
+    global current_player
     current_player = player_choice.get()
     reset_board()
-    click_cnt = 0
 
+    # Активируем кнопки игрового поля
+    for row in buttons:
+        for btn in row:
+            btn.config(state=tk.NORMAL)
+
+    # Отключаем радиокнопки после начала игры
+    for radio in radio_buttons:
+        radio.config(state=tk.DISABLED)
+
+    # Отключаем кнопку "Старт" после начала игры
+    start_button.config(state=tk.DISABLED)
 
 # Создание радиокнопок для выбора символа
 choice_label = tk.Label(window, text="Выберите символ:", font=("Arial", 14))
 choice_label.grid(row=0, column=0, columnspan=3)
 
-tk.Radiobutton(window, text="Крестик (X)", variable=player_choice, value="X", font=("Arial", 12)).grid(row=1, column=0, columnspan=3)
-tk.Radiobutton(window, text="Нолик (O)", variable=player_choice, value="O", font=("Arial", 12)).grid(row=2, column=0, columnspan=3)
+radio_buttons = [
+    tk.Radiobutton(window, text="Крестик (X)", variable=player_choice, value="X", font=("Arial", 12)),
+    tk.Radiobutton(window, text="Нолик (O)", variable=player_choice, value="O", font=("Arial", 12))
+]
+
+for i, radio in enumerate(radio_buttons):
+    radio.grid(row=1+i, column=0, columnspan=3)
 
 start_button = tk.Button(window, text="Начать игру", command=start_game, font=("Arial", 14))
 start_button.grid(row=3, column=0, columnspan=3)
@@ -79,6 +98,7 @@ for i in range(3):
     for j in range(3):
         btn = tk.Button(window, text="", font=("Arial", 20), width=5, height=2, command=lambda r=i, c=j: on_click(r, c))
         btn.grid(row=i+4, column=j)
+        btn.config(state=tk.DISABLED)  # Делаем кнопки неактивными
         row.append(btn)
     buttons.append(row)
 
