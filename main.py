@@ -24,6 +24,12 @@ def check_winner():
     return False
 
 
+def reset_btn():
+    for row in range(3):
+        for col in range(3):
+           buttons[row][col]['text'] = ""
+
+
 def on_click(row, col):
     global current_player
 
@@ -34,6 +40,7 @@ def on_click(row, col):
 
     if check_winner():
        messagebox.showinfo("Игра окончена",f"Игрок {current_player} победил!")
+       reset_btn()
 
     current_player = "0" if current_player == "X" else "X"
 
@@ -45,6 +52,8 @@ for i in range(3):
        btn.grid(row=i, column=j)
        row.append(btn)
    buttons.append(row)
+
+
 
 
 window.mainloop()
